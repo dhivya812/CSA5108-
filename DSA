@@ -1,0 +1,71 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+#define P 23  // A prime number
+#define Q 11  // A divisor of P-1
+#define G 5   // A generator (primitive root modulo P)
+
+unsigned long modExp(unsigned long base, unsigned long exp, unsigned long mod) {
+    unsigned long result = 1;
+    while (exp > 0) {
+        if (exp % 2 == 1)
+            result = (result * base) % mod;
+        base = (base * base) % mod;
+        exp /= 2;
+    }
+    return result;
+}
+
+unsigned long generatePrivateKey() {
+    return rand() % (Q - 1) + 1; // Private key should be between 1 and Q-1
+}
+
+unsigned long generateK() {
+    return rand() % (Q - 1) + 1; // Random k between 1 and Q-1
+}
+
+unsigned long generateSignature(unsigned long privateKey, unsigned long messageHash) {
+    unsigned long k = generateK();
+    unsigned long r = modExp(G, k, P) % Q;
+    unsigned long s = ((messageHash + privateKey * r) * modExp(k, Q - 2, Q)) % Q;
+    printf("Signature (r, s): (%lu, %lu)\n", r, s);
+    return r;  // We return r and s for signature verification
+}
+
+int verifySignature(unsigned long r, unsigned long s, unsigned long publicKey, unsigned long messageHash) {
+    if (r <= 0 || r >= Q || s <= 0 || s >= Q) {
+        return 0;  // Invalid signature
+    }
+
+    unsigned long w = modExp(s, Q - 2, Q);
+    unsigned long u1 = (messageHash * w) % Q;
+    unsigned long u2 = (r * w) % Q;
+
+    unsigned long v = ((modExp(G, u1, P) * modExp(publicKey, u2, P)) % P) % Q;
+    
+    return v == r;  // Valid signature if v == r
+}
+
+int main() {
+    srand(time(0));  // Seed for random number generation
+
+    unsigned long privateKey = generatePrivateKey();  // Generate private key
+    unsigned long publicKey = modExp(G, privateKey, P);  // Generate public key
+
+    printf("Private Key: %lu\n", privateKey);
+    printf("Public Key: %lu\n", publicKey);
+
+    unsigned long messageHash = 12;  // Example hash of the message
+
+    unsigned long r = generateSignature(privateKey, messageHash);  // Generate signature
+
+    // For signature verification, we use the public key and the original message hash
+    if (verifySignature(r, r, publicKey, messageHash)) {
+        printf("Signature is valid.\n");
+    } else {
+        printf("Signature is invalid.\n");
+    }
+
+    return 0;
+}
