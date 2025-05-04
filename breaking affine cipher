@@ -1,0 +1,48 @@
+#include <stdio.h>
+
+int modInverse(int a, int m) {
+    for (int x = 1; x < m; x++)
+        if ((a * x) % m == 1)
+            return x;
+    return -1;
+}
+
+void affineDecrypt(char* cipher, int a, int b) {
+    int a_inv = modInverse(a, 26);
+    if (a_inv == -1) {
+        printf("Inverse doesn't exist.\n");
+        return;
+    }
+
+    for (int i = 0; cipher[i]; i++) {
+        if (cipher[i] >= 'A' && cipher[i] <= 'Z') {
+            int val = ((a_inv * ((cipher[i] - 'A' - b + 26)) % 26) + 26) % 26;
+            cipher[i] = val + 'A';
+        }
+    }
+}
+
+int main() {
+    char cipher[] = "YOUR_CIPHERTEXT_HERE"; // Replace with actual
+    int a, b;
+
+    // Assuming E -> B and T -> U gives us two equations to solve:
+    // B = a*E + b => 1 = a*4 + b
+    // U = a*T + b => 20 = a*19 + b
+    // => Solve equations manually or write code to brute-force
+
+    // Let's brute-force:
+    for (a = 1; a < 26; a++) {
+        if (modInverse(a, 26) == -1) continue;
+        for (b = 0; b < 26; b++) {
+            char temp[] = "B"; // most frequent cipher letter
+            affineDecrypt(temp, a, b);
+            if (temp[0] == 'E') {
+                printf("Possible key: a = %d, b = %d\n", a, b);
+                break;
+            }
+        }
+    }
+
+    return 0;
+}
