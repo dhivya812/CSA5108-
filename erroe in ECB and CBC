@@ -1,0 +1,23 @@
+#include <stdio.h>
+
+void error_propagation() {
+    printf("Error Propagation in ECB and CBC Modes:\n\n");
+
+    printf("ECB Mode:\n");
+    printf("An error in a ciphertext block affects only the corresponding plaintext block upon decryption.\n\n");
+
+    printf("CBC Mode:\n");
+    printf("An error in a ciphertext block affects the decryption of the current and the next plaintext blocks.\n");
+    printf("Specifically:\n");
+    printf("- Error in C1 affects P1 and P2.\n");
+    printf("- No further blocks beyond P2 are affected.\n\n");
+
+    printf("If there is a bit error in the source version of P1:\n");
+    printf("- The error propagates through the encryption process, affecting all subsequent ciphertext blocks.\n");
+    printf("- At the receiver, the decryption of all subsequent blocks will be incorrect.\n");
+}
+
+int main() {
+    error_propagation();
+    return 0;
+}
