@@ -1,0 +1,28 @@
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t affine_encrypt(uint8_t byte, uint8_t a, uint8_t b) {
+    return (a * byte + b) % 256;
+}
+
+uint8_t affine_decrypt(uint8_t byte, uint8_t a_inv, uint8_t b) {
+    return (a_inv * (byte - b)) % 256;
+}
+
+void cbc_encrypt(uint8_t *plaintext, uint8_t *ciphertext, size_t len, uint8_t a, uint8_t b, uint8_t iv) {
+    uint8_t prev = iv;
+    for (size_t i = 0; i < len; i++) {
+        uint8_t xored = plaintext[i] ^ prev;
+        ciphertext[i] = affine_encrypt(xored, a, b);
+        prev = ciphertext[i];
+    }
+}
+
+void cbc_decrypt(uint8_t *ciphertext, uint8_t *plaintext, size_t len, uint8_t a_inv, uint8_t b, uint8_t iv) {
+    uint8_t prev = iv;
+    for (size_t i = 0; i < len; i++) {
+        uint8_t decrypted = affine_decrypt(ciphertext[i], a_inv, b);
+        plaintext[i] = decrypted ^ prev;
+        prev = ciphertext[i];
+    }
+}
