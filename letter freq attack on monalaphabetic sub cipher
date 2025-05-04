@@ -1,0 +1,50 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+
+void frequency_attack(char *ciphertext) {
+    int freq[26] = {0};
+    int len = strlen(ciphertext);
+
+    for (int i = 0; i < len; i++) {
+        if (isalpha(ciphertext[i])) {
+            freq[toupper(ciphertext[i]) - 'A']++;
+        }
+    }
+
+    char english_freq[] = "ETAOINSHRDLCUMWFGYPBVKJXQZ";
+    char mapping[26];
+    int used[26] = {0};
+
+    for (int i = 0; i < 26; i++) {
+        int max = 0, index = -1;
+        for (int j = 0; j < 26; j++) {
+            if (!used[j] && freq[j] > max) {
+                max = freq[j];
+                index = j;
+            }
+        }
+        if (index != -1) {
+            mapping[index] = english_freq[i];
+            used[index] = 1;
+        }
+    }
+
+    printf("Decrypted text:\n");
+    for (int i = 0; i < len; i++) {
+        if (isalpha(ciphertext[i])) {
+            char base = isupper(ciphertext[i]) ? 'A' : 'a';
+            char decrypted_char = mapping[toupper(ciphertext[i]) - 'A'];
+            printf("%c", isupper(ciphertext[i]) ? decrypted_char : tolower(decrypted_char));
+        } else {
+            printf("%c", ciphertext[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    char ciphertext[] = "Gsrh rh z hvxivg nvhhztv";
+    frequency_attack(ciphertext);
+    return 0;
+}
