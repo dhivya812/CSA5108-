@@ -1,0 +1,55 @@
+#include <stdio.h>
+
+int mod26(int x) {
+    return (x % 26 + 26) % 26;
+}
+
+int modInverse(int a) {
+    for (int i = 1; i < 26; i++) {
+        if ((a * i) % 26 == 1)
+            return i;
+    }
+    return -1;
+}
+
+void inverseMatrix(int m[2][2], int inv[2][2]) {
+    int det = mod26(m[0][0]*m[1][1] - m[0][1]*m[1][0]);
+    int detInv = modInverse(det);
+    if (detInv == -1) {
+        printf("Matrix not invertible.\n");
+        return;
+    }
+    inv[0][0] = mod26( m[1][1] * detInv);
+    inv[0][1] = mod26(-m[0][1] * detInv);
+    inv[1][0] = mod26(-m[1][0] * detInv);
+    inv[1][1] = mod26( m[0][0] * detInv);
+}
+
+void multiplyMatrix(int a[2][2], int b[2][2], int result[2][2]) {
+    for (int i = 0; i < 2; i++)
+        for (int j = 0; j < 2; j++)
+            result[i][j] = mod26(a[i][0]*b[0][j] + a[i][1]*b[1][j]);
+}
+
+int main() {
+    // Plaintext pairs: "hi" "th" => P
+    // Ciphertext pairs: "fn" "kw" => C
+    int P[2][2] = {
+        {'h'-'a', 't'-'a'}, // h = 7, t = 19
+        {'i'-'a', 'h'-'a'}  // i = 8, h = 7
+    };
+    int C[2][2] = {
+        {'f'-'a', 'k'-'a'}, // f = 5, k = 10
+        {'n'-'a', 'w'-'a'}  // n = 13, w = 22
+    };
+
+    int P_inv[2][2], K[2][2];
+    inverseMatrix(P, P_inv);
+    multiplyMatrix(C, P_inv, K);
+
+    printf("Recovered key matrix K:\n");
+    for (int i = 0; i < 2; i++)
+        printf("| %2d %2d |\n", K[i][0], K[i][1]);
+
+    return 0;
+}
