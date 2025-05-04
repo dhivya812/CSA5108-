@@ -1,0 +1,9 @@
+#include <stdio.h>
+#include <string.h>
+
+void pkcs7_pad(unsigned char *data, size_t data_len, size_t block_size) {
+    size_t pad_len = block_size - (data_len % block_size);
+    for (size_t i = 0; i < pad_len; i++) {
+        data[data_len + i] = (unsigned char)pad_len;
+    }
+}
