@@ -1,0 +1,12 @@
+#include <stdio.h>
+
+// Estimate total possible Playfair cipher keys
+int main() {
+    int total_letters = 25; // 'I' and 'J' are combined
+    unsigned long long total_keys = 1;
+    for (int i = 2; i <= total_letters; i++) {
+        total_keys *= i;
+    }
+    printf("Approximate number of Playfair cipher keys: %llu\n", total_keys);
+    return 0;
+}
