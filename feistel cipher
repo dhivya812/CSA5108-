@@ -1,0 +1,53 @@
+#include <stdio.h>
+#include <string.h>
+
+#define ROUNDS 4
+
+// Simple round function: XOR with key
+int roundFunction(int half, int key) {
+    return half ^ key;
+}
+
+// Feistel encryption
+void feistelEncrypt(int plaintext, int keys[ROUNDS], int *ciphertext) {
+    int left = (plaintext >> 4) & 0xF;  // Left 4 bits
+    int right = plaintext & 0xF;        // Right 4 bits
+
+    for (int i = 0; i < ROUNDS; i++) {
+        int temp = right;
+        right = left ^ roundFunction(right, keys[i]);
+        left = temp;
+    }
+
+    *ciphertext = (left << 4) | right;  // Combine halves
+}
+
+// Feistel decryption (reverse keys)
+void feistelDecrypt(int ciphertext, int keys[ROUNDS], int *plaintext) {
+    int left = (ciphertext >> 4) & 0xF;
+    int right = ciphertext & 0xF;
+
+    for (int i = ROUNDS - 1; i >= 0; i--) {
+        int temp = left;
+        left = right ^ roundFunction(left, keys[i]);
+        right = temp;
+    }
+
+    *plaintext = (left << 4) | right;
+}
+
+int main() {
+    int plaintext = 0b11010110;  // 8-bit input
+    int keys[ROUNDS] = {0xA, 0x3, 0xF, 0x9};  // Example 4-bit subkeys
+
+    int ciphertext, decrypted;
+
+    feistelEncrypt(plaintext, keys, &ciphertext);
+    feistelDecrypt(ciphertext, keys, &decrypted);
+
+    printf("Original Plaintext:  0x%X\n", plaintext);
+    printf("Encrypted Ciphertext: 0x%X\n", ciphertext);
+    printf("Decrypted Plaintext:  0x%X\n", decrypted);
+
+    return 0;
+}
