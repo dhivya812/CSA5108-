@@ -1,0 +1,13 @@
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t affine_encrypt(uint8_t byte, uint8_t a, uint8_t b) {
+    return (a * byte + b) % 256;
+}
+
+void ctr_encrypt_decrypt(uint8_t *input, uint8_t *output, size_t len, uint8_t a, uint8_t b, uint8_t counter) {
+    for (size_t i = 0; i < len; i++) {
+        uint8_t keystream = affine_encrypt(counter + i, a, b);
+        output[i] = input[i] ^ keystream;
+    }
+}
