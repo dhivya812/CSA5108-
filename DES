@@ -1,0 +1,15 @@
+#include <stdio.h>
+
+int shift_schedule[16] = {1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1};
+
+void generate_keys_for_decryption() {
+    printf("DES Decryption Key Generation Shift Schedule:\n");
+    for (int i = 15; i >= 0; i--) {
+        printf("Round %2d: Shift by %d\n", 16 - i, shift_schedule[i]);
+    }
+}
+
+int main() {
+    generate_keys_for_decryption();
+    return 0;
+}
