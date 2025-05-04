@@ -1,0 +1,25 @@
+#include <stdio.h>
+
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int main() {
+    int n = 3599;   // n = p * q (e.g., p=59, q=61)
+    int m = 59;     // Deliberately choosing m sharing a factor with n
+
+    int result = gcd(m, n);
+
+    if (result != 1) {
+        printf("Weak plaintext! gcd(%d, %d) = %d (leaks factor of n!)\n", m, n, result);
+    } else {
+        printf("Safe plaintext. gcd(%d, %d) = 1\n", m, n);
+    }
+
+    return 0;
+}
