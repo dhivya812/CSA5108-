@@ -1,0 +1,42 @@
+#include <stdio.h>
+
+int gcd(int a, int b) {
+    while (b != 0) {
+        int temp = b;
+        b = a % b;
+        a = temp;
+    }
+    return a;
+}
+
+int modinv(int e, int phi) {
+    int t = 0, newt = 1;
+    int r = phi, newr = e;
+    while (newr != 0) {
+        int quotient = r / newr;
+        int temp = newt;
+        newt = t - quotient * newt;
+        t = temp;
+        temp = newr;
+        newr = r - quotient * newr;
+        r = temp;
+    }
+    if (r > 1) return -1; // e is not invertible
+    if (t < 0) t += phi;
+    return t;
+}
+
+int main() {
+    int n = 3599;
+    int e = 31;
+    int p = 59; // Factor of n
+    int q = 61; // Factor of n
+    int phi = (p - 1) * (q - 1);
+    int d = modinv(e, phi);
+    if (d == -1) {
+        printf("Modular inverse does not exist.\n");
+    } else {
+        printf("Private key d: %d\n", d);
+    }
+    return 0;
+}
