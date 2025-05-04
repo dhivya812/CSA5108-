@@ -1,0 +1,31 @@
+#include <stdio.h>
+#include <stdint.h>
+
+uint8_t simple_encrypt(uint8_t data, uint8_t key) {
+    return data ^ key; // Simulated block cipher
+}
+
+uint8_t cbc_mac(uint8_t *msg, int len, uint8_t key) {
+    uint8_t prev = 0;
+    for (int i = 0; i < len; i++) {
+        prev = simple_encrypt(msg[i] ^ prev, key);
+    }
+    return prev;
+}
+
+int main() {
+    uint8_t key = 0xAB;
+    uint8_t X = 0x10;
+    uint8_t T = cbc_mac(&X, 1, key);
+
+    uint8_t forged[2];
+    forged[0] = X;
+    forged[1] = X ^ T;
+
+    uint8_t T2 = cbc_mac(forged, 2, key);
+
+    printf("Original MAC: 0x%X\n", T);
+    printf("Forged MAC on X || (X ⊕ T): 0x%X\n", T2);
+
+    return 0;
+}
